@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  scroll-behavior: smooth;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+.a-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.v-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
