@@ -1,7 +1,9 @@
 package com.wasteland.enchant.screens
 
+import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +35,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +52,8 @@ import com.wasteland.enchant.Home
 import com.wasteland.enchant.Login
 import com.wasteland.enchant.R
 import com.wasteland.enchant.ui.theme.appBlue
+import com.wasteland.enchant.utils.Result
+import com.wasteland.enchant.utils.Validations
 import kotlinx.coroutines.delay
 
 @Composable
@@ -66,6 +72,10 @@ fun SignUpContainer(nav: NavHostController, modifier: Modifier = Modifier) {
     }
     var showPassword by remember {
         mutableStateOf(false)
+    }
+
+    var resultUI by remember {
+        mutableStateOf(Result(true, ""))
     }
 
     Column(
@@ -117,7 +127,12 @@ fun SignUpContainer(nav: NavHostController, modifier: Modifier = Modifier) {
                     Text(text = "Email")
                 },
                 modifier = Modifier
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 8.dp)
+                    .onFocusChanged {
+                        if (!it.isFocused) {
+                            resultUI = Validations.validate("sas")
+                        }
+                    },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.icon_mail),
@@ -125,6 +140,9 @@ fun SignUpContainer(nav: NavHostController, modifier: Modifier = Modifier) {
                         tint = Color.White
                     )
                 },
+                isError = resultUI.isValid,
+                supportingText = {Text(text = resultUI.message)},
+                singleLine = true
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
@@ -227,8 +245,8 @@ fun AnimatedButton(
 
 
     val horizontalPadding by animateDpAsState(
-        targetValue = if (animating) 60.dp else 0.dp,
-        animationSpec = tween(durationMillis = 300, easing = EaseOut),
+        targetValue = if (animating) 100.dp else 0.dp,
+        animationSpec = tween(durationMillis = 200, easing = EaseOut),
         finishedListener = {
             if (animating) {
                 showProgress = true
@@ -236,6 +254,13 @@ fun AnimatedButton(
             }
         }, label = ""
     )
+
+    val visibility by animateFloatAsState(
+        targetValue = if(showProgress) 1f else 0f,
+        animationSpec = tween(durationMillis = 1090, easing = EaseIn),
+        label = ""
+    )
+
     LaunchedEffect(isLoading) {
         if(isLoading){
             animating = true
@@ -257,7 +282,10 @@ fun AnimatedButton(
             CircularProgressIndicator(
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(30.dp),
+                    .size(30.dp)
+                    .graphicsLayer {
+                        this.alpha = visibility
+                    },
                 color = colorResource(id = R.color.teal_200)
             )
 
@@ -268,7 +296,11 @@ fun AnimatedButton(
                     isLoading = true
                 },
                 enabled = enabled,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer {
+                        this.alpha = 1 - visibility
+                    },
                 colors = ButtonDefaults.buttonColors()
                     .copy(
                         containerColor = appBlue,
