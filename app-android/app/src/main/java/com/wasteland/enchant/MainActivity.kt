@@ -25,11 +25,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            EnchantTheme {
+            EnchantTheme(darkTheme = true) {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = Login
+                    startDestination = SignUp
                 ) {
                     composable<Login> { LoginScreen(nav = navController) }
                     composable<SignUp> { SignUpScreen(nav = navController) }
