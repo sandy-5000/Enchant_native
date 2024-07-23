@@ -38,6 +38,7 @@ import com.wasteland.enchant.Home
 import com.wasteland.enchant.R
 import com.wasteland.enchant.SignUp
 import com.wasteland.enchant.ui.theme.appBlue
+import com.wasteland.enchant.utils.Player
 
 @Composable
 fun LoginContainer(nav: NavHostController, modifier: Modifier = Modifier) {
@@ -50,7 +51,7 @@ fun LoginContainer(nav: NavHostController, modifier: Modifier = Modifier) {
     var showPassword by remember {
         mutableStateOf(false)
     }
-
+    Player()
     Box(
         modifier = modifier
             .fillMaxSize()
